@@ -52,19 +52,3 @@ export default function HomePage() {
     </Layout>
   );
 }
-
-{
-  /* <Grid key={poke.id} xs={6} sm={3} md={2} xl={1}>
-  <Card isHoverable isPressable>
-    <Card.Body css={{ p: 1 }}>
-      <Card.Image src={poke.img} width="100%" height={140} />
-    </Card.Body>
-    <Card.Footer css={{ justifyItems: "flex-start" }}>
-      <Row justify="space-between">
-        <Text transform="capitalize">{poke.name}</Text>
-        <Text>{poke.id}</Text>
-      </Row>
-    </Card.Footer>
-  </Card>
-</Grid> */
-}
