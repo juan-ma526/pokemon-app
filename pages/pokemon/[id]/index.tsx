@@ -3,7 +3,7 @@ import { PokemonFull } from "@/interfaces";
 import { Button, Card, Container, Grid, Image, Text } from "@nextui-org/react";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import useSWR from "swr";
 
@@ -31,9 +31,11 @@ const PokemonPage = () => {
     return false;
   };
 
-  const [isInFavorites, setIsInFavorites] = useState(
-    existInFavorites(data?.id)
-  );
+  const [isInFavorites, setIsInFavorites] = useState(false);
+
+  useEffect(() => {
+    setIsInFavorites(existInFavorites(data?.id));
+  }, [data?.id]);
 
   if (error) {
     router.push("/");
