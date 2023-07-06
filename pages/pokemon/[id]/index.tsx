@@ -3,6 +3,7 @@ import { PokemonFull } from "@/interfaces";
 import { Button, Card, Container, Grid, Image, Text } from "@nextui-org/react";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 import useSWR from "swr";
 
@@ -13,14 +14,48 @@ const fetcher = async (url: string) => {
 const PokemonPage = () => {
   const router = useRouter();
   const { query } = router;
-
   const { data, isLoading, error } = useSWR(
     query.id ? `https://pokeapi.co/api/v2/pokemon/${query.id}` : null,
     fetcher
   );
 
+  const existInFavorites = (id: number | undefined): boolean => {
+    if (typeof localStorage !== undefined) {
+      const favorites: number[] = JSON.parse(
+        localStorage.getItem("favorites") || "[]"
+      );
+      if (id !== undefined) {
+        return favorites.includes(id);
+      }
+    }
+    return false;
+  };
+
+  const [isInFavorites, setIsInFavorites] = useState(
+    existInFavorites(data?.id)
+  );
+
+  if (error) {
+    router.push("/");
+  }
+
+  const handleFavorites = (id: number | undefined) => {
+    let favorites: number[] = JSON.parse(
+      localStorage.getItem("favorites") || "[]"
+    );
+    if (id !== undefined) {
+      if (favorites.includes(id)) {
+        favorites = favorites.filter((pokeId) => pokeId !== id);
+      } else {
+        favorites.push(id);
+      }
+      localStorage.setItem("favorites", JSON.stringify(favorites));
+    }
+    setIsInFavorites(!isInFavorites);
+  };
+
   return (
-    <Layout title="Algun pokemon">
+    <Layout title={data?.name}>
       <Grid.Container css={{ marginTop: "5px" }} gap={2}>
         <Grid xs={12} sm={4}>
           <Card isHoverable css={{ padding: "30px" }}>
@@ -43,8 +78,12 @@ const PokemonPage = () => {
               css={{ display: "flex", justifyContent: "space-between" }}
             >
               <Text h1>{data?.name}</Text>
-              <Button color="gradient" ghost>
-                Guardar en Favoritos
+              <Button
+                onClick={() => handleFavorites(data?.id)}
+                color="gradient"
+                ghost={!isInFavorites}
+              >
+                {isInFavorites ? "En Favoritos" : "Guardar en Favoritos"}
               </Button>
             </Card.Header>
             <Card.Body>
